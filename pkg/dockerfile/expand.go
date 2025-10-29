@@ -16,20 +16,62 @@ func (d *Dockerfile) Expand(env SingleWordExpander) {
 
 func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
 	metaArgsEnvExpander := d.metaArgsEnvExpander(env)
+
+	// Create an os.Expand-compatible function from the SingleWordExpander
+	expandFunc := func(key string) string {
+		value, err := metaArgsEnvExpander(key)
+		if err != nil {
+			return ""
+		}
+		return value
+	}
+
 	for i, stage := range d.Stages {
-		d.Stages[i].BaseName = os.Expand(stage.BaseName, func(key string) string {
-			value, err := metaArgsEnvExpander(key)
-			if err != nil {
-				return ""
-			}
-			return value
-		})
+		d.Stages[i].BaseName = os.Expand(stage.BaseName, expandFunc)
+
 		for i := range stage.Commands {
-			cmdExpander, ok := stage.Commands[i].Command.(instructions.SupportsSingleWordExpansion)
-			if ok {
-				cmdExpander.Expand(metaArgsEnvExpander)
+			// Expand commands using os.Expand instead of delegating to buildkit
+			// This allows complex expressions like "$VERSION+git-$REVISION" to work
+			d.expandCommand(stage.Commands[i], expandFunc)
+		}
+	}
+}
+
+// expandCommand expands variables in command values using os.Expand
+func (d *Dockerfile) expandCommand(cmd *Command, expandFunc func(string) string) {
+	switch c := cmd.Command.(type) {
+	case *instructions.LabelCommand:
+		// Expand LABEL key-value pairs
+		for i := range c.Labels {
+			c.Labels[i].Key = os.Expand(c.Labels[i].Key, expandFunc)
+			c.Labels[i].Value = os.Expand(c.Labels[i].Value, expandFunc)
+		}
+	case *instructions.EnvCommand:
+		// Expand ENV key-value pairs
+		for i := range c.Env {
+			c.Env[i].Key = os.Expand(c.Env[i].Key, expandFunc)
+			c.Env[i].Value = os.Expand(c.Env[i].Value, expandFunc)
+		}
+	case *instructions.ArgCommand:
+		// Expand ARG values
+		for i := range c.Args {
+			if c.Args[i].Value != nil {
+				expanded := os.Expand(*c.Args[i].Value, expandFunc)
+				c.Args[i].Value = &expanded
 			}
 		}
+	case *instructions.WorkdirCommand:
+		// Expand WORKDIR path
+		c.Path = os.Expand(c.Path, expandFunc)
+	case *instructions.UserCommand:
+		// Expand USER value
+		c.User = os.Expand(c.User, expandFunc)
+	case instructions.SupportsSingleWordExpansion:
+		// For other commands that support expansion, use buildkit's method
+		// This is a fallback for commands we haven't explicitly handled
+		c.Expand(func(word string) (string, error) {
+			return os.Expand(word, expandFunc), nil
+		})
 	}
 }
 
