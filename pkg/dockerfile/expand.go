@@ -18,10 +18,39 @@ func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
 	for i, stage := range d.Stages {
 		// Ignore error, expandMetaArgs never errors
 		d.Stages[i].BaseName, _ = expandMetaArgs(d.Stages[i].BaseName)
+
+		localVars := make(map[string]string)
+		expandLocalVars := func(s string) (string, error) {
+			expanded := os.Expand(s, func(varname string) string {
+				// Expand to variable value or empty string (if undefined)
+				return localVars[varname]
+			})
+			return expanded, nil
+		}
+
 		for i := range stage.Commands {
 			cmdExpander, ok := stage.Commands[i].Command.(instructions.SupportsSingleWordExpansion)
 			if ok {
-				cmdExpander.Expand(expandMetaArgs)
+				cmdExpander.Expand(expandLocalVars)
+			}
+
+			// *After* expanding, update local variables
+			switch command := stage.Commands[i].Command.(type) {
+			case *instructions.EnvCommand:
+				for _, env := range command.Env {
+					localVars[env.Key] = env.Value
+				}
+			case *instructions.ArgCommand:
+				for i := range command.Args {
+					arg := &command.Args[i]
+					if val, err := env(arg.Key); err == nil {
+						// Override with externally supplied arg value
+						arg.Value = &val
+					}
+					if arg.Value != nil {
+						localVars[arg.Key] = *arg.Value
+					}
+				}
 			}
 		}
 	}
