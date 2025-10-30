@@ -7,9 +7,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 // TestIntegration discovers and runs all integration test cases in testdata/
@@ -185,26 +186,23 @@ func updateGoldenFile(path string, data []byte) error {
 	return os.WriteFile(path, buf.Bytes(), 0644)
 }
 
-// compareJSON compares two JSON byte slices for deep equality
+// compareJSON compares two JSON byte slices by pretty-printing them
+// and comparing as strings. This provides more readable diffs.
 func compareJSON(t *testing.T, expected, actual []byte) error {
 	t.Helper()
 
-	var expectedJSON, actualJSON any
-
-	if err := json.Unmarshal(expected, &expectedJSON); err != nil {
-		return fmt.Errorf("failed to unmarshal expected JSON: %w", err)
+	var expectedBuf bytes.Buffer
+	if err := json.Indent(&expectedBuf, expected, "", "  "); err != nil {
+		return fmt.Errorf("failed to format expected JSON: %w", err)
 	}
 
-	if err := json.Unmarshal(actual, &actualJSON); err != nil {
-		return fmt.Errorf("failed to unmarshal actual JSON: %w", err)
+	var actualBuf bytes.Buffer
+	if err := json.Indent(&actualBuf, actual, "", "  "); err != nil {
+		return fmt.Errorf("failed to format actual JSON: %w", err)
 	}
 
-	if !reflect.DeepEqual(expectedJSON, actualJSON) {
-		var expectedBuf, actualBuf bytes.Buffer
-		json.Indent(&expectedBuf, expected, "", "  ")
-		json.Indent(&actualBuf, actual, "", "  ")
-		return fmt.Errorf("JSON mismatch:\n\nExpected:\n%s\n\nActual:\n%s",
-			expectedBuf.String(), actualBuf.String())
+	if diff := cmp.Diff(expectedBuf.String(), actualBuf.String()); diff != "" {
+		return fmt.Errorf("JSON mismatch (-expected +actual):\n%s", diff)
 	}
 
 	return nil
