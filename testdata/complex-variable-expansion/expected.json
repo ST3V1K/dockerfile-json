@@ -1,0 +1,184 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "BASE_IMAGE",
+      "DefaultValue": "busybox:latest",
+      "ProvidedValue": null,
+      "Value": "busybox:latest"
+    },
+    {
+      "Key": "META_BUT_ALSO_LOCAL",
+      "DefaultValue": "global-value",
+      "ProvidedValue": null,
+      "Value": "global-value"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "global-value",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM $META_BUT_ALSO_LOCAL",
+      "Location": [
+        {
+          "Start": {
+            "Line": 4,
+            "Character": 0
+          },
+          "End": {
+            "Line": 4,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "global-value"
+      },
+      "Commands": null
+    },
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "busybox:latest",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM $BASE_IMAGE",
+      "Location": [
+        {
+          "Start": {
+            "Line": 6,
+            "Character": 0
+          },
+          "End": {
+            "Line": 6,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "busybox:latest"
+      },
+      "Commands": [
+        {
+          "Labels": [
+            {
+              "Key": "empty-because-its-a-meta-arg",
+              "NoDelim": false,
+              "Value": "$BASE_IMAGE"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "empty-because-defined-later",
+              "NoDelim": false,
+              "Value": "$VERSION"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "VERSION",
+              "Value": "1.0.0"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "version",
+              "NoDelim": false,
+              "Value": "$VERSION"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "REVISION",
+              "Value": null
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Env": [
+            {
+              "Key": "VERSION_REVISION",
+              "NoDelim": false,
+              "Value": "${VERSION}+${REVISION}"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ENV",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "version-revision",
+              "NoDelim": false,
+              "Value": "$VERSION_REVISION"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "META_BUT_ALSO_LOCAL",
+              "Value": "local-value"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "should-take-the-local-value",
+              "NoDelim": false,
+              "Value": "$META_BUT_ALSO_LOCAL"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        }
+      ]
+    }
+  ]
+}
