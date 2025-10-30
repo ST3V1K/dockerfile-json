@@ -1,0 +1,8 @@
+--build-arg
+META_BUT_ALSO_LOCAL=same-value-for-both
+
+--build-arg
+VERSION=2.0.0
+
+--build-arg
+REVISION=deadbeef

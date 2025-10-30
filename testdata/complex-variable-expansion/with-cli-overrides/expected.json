@@ -1,0 +1,184 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "BASE_IMAGE",
+      "DefaultValue": "busybox:latest",
+      "ProvidedValue": null,
+      "Value": "busybox:latest"
+    },
+    {
+      "Key": "META_BUT_ALSO_LOCAL",
+      "DefaultValue": "global-value",
+      "ProvidedValue": "same-value-for-both",
+      "Value": "same-value-for-both"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "same-value-for-both",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM $META_BUT_ALSO_LOCAL",
+      "Location": [
+        {
+          "Start": {
+            "Line": 4,
+            "Character": 0
+          },
+          "End": {
+            "Line": 4,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "same-value-for-both"
+      },
+      "Commands": null
+    },
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "busybox:latest",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM $BASE_IMAGE",
+      "Location": [
+        {
+          "Start": {
+            "Line": 6,
+            "Character": 0
+          },
+          "End": {
+            "Line": 6,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "busybox:latest"
+      },
+      "Commands": [
+        {
+          "Labels": [
+            {
+              "Key": "empty-because-its-a-meta-arg",
+              "NoDelim": false,
+              "Value": ""
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "empty-because-defined-later",
+              "NoDelim": false,
+              "Value": ""
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "VERSION",
+              "Value": "2.0.0"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "version",
+              "NoDelim": false,
+              "Value": "2.0.0"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "REVISION",
+              "Value": "deadbeef"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Env": [
+            {
+              "Key": "VERSION_REVISION",
+              "NoDelim": false,
+              "Value": "2.0.0+deadbeef"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ENV",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "version-revision",
+              "NoDelim": false,
+              "Value": "2.0.0+deadbeef"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "META_BUT_ALSO_LOCAL",
+              "Value": "same-value-for-both"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "should-take-the-local-value",
+              "NoDelim": false,
+              "Value": "same-value-for-both"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        }
+      ]
+    }
+  ]
+}
