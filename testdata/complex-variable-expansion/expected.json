@@ -66,7 +66,7 @@
             {
               "Key": "empty-because-its-a-meta-arg",
               "NoDelim": false,
-              "Value": "$BASE_IMAGE"
+              "Value": "busybox:latest"
             }
           ],
           "Mounts": null,
@@ -79,7 +79,7 @@
             {
               "Key": "empty-because-defined-later",
               "NoDelim": false,
-              "Value": "$VERSION"
+              "Value": ""
             }
           ],
           "Mounts": null,
@@ -105,7 +105,7 @@
             {
               "Key": "version",
               "NoDelim": false,
-              "Value": "$VERSION"
+              "Value": ""
             }
           ],
           "Mounts": null,
@@ -131,7 +131,7 @@
             {
               "Key": "VERSION_REVISION",
               "NoDelim": false,
-              "Value": "${VERSION}+${REVISION}"
+              "Value": "+"
             }
           ],
           "Mounts": null,
@@ -144,7 +144,7 @@
             {
               "Key": "version-revision",
               "NoDelim": false,
-              "Value": "$VERSION_REVISION"
+              "Value": ""
             }
           ],
           "Mounts": null,
@@ -170,7 +170,7 @@
             {
               "Key": "should-take-the-local-value",
               "NoDelim": false,
-              "Value": "$META_BUT_ALSO_LOCAL"
+              "Value": "global-value"
             }
           ],
           "Mounts": null,

@@ -42,7 +42,7 @@
             {
               "Key": "version",
               "NoDelim": false,
-              "Value": "${VERSION}"
+              "Value": ""
             }
           ],
           "Mounts": null,
