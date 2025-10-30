@@ -39,6 +39,9 @@ func init() {
 	flag.StringVar(&config.JSONPathString, "jsonpath", config.JSONPathString, "select parts of the output using JSONPath (https://goessner.net/articles/JsonPath)")
 	flag.BoolVar(&config.JSONPathRaw, "jsonpath-raw", config.JSONPathRaw, "when using JSONPath, output raw strings, not JSON values")
 	flag.Var(&config.BuildArgs, "build-arg", config.BuildArgs.Help())
+}
+
+func parseFlags() {
 	flag.Parse()
 
 	if config.Quiet {
@@ -103,6 +106,8 @@ func buildArgEnvExpander() dockerfile.SingleWordExpander {
 }
 
 func main() {
+	parseFlags()
+
 	var dockerfiles []*dockerfile.Dockerfile
 	for _, path := range flag.Args() {
 		dockerfile, err := dockerfile.Parse(path)
