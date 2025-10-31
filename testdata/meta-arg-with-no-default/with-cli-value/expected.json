@@ -1,0 +1,36 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "BASE_IMAGE_VERSION",
+      "DefaultValue": null,
+      "ProvidedValue": "42",
+      "Value": "42"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "fedora:42",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM fedora:$BASE_IMAGE_VERSION",
+      "Location": [
+        {
+          "Start": {
+            "Line": 3,
+            "Character": 0
+          },
+          "End": {
+            "Line": 3,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "fedora:42"
+      },
+      "Commands": null
+    }
+  ]
+}
