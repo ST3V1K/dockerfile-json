@@ -1,0 +1,2 @@
+--build-arg
+ALPINE_TAG=4.0

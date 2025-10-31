@@ -1,0 +1,42 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "ALPINE_MINOR",
+      "DefaultValue": "10",
+      "ProvidedValue": null,
+      "Value": "10"
+    },
+    {
+      "Key": "ALPINE_TAG",
+      "DefaultValue": "3.${ALPINE_MINOR}",
+      "ProvidedValue": null,
+      "Value": "3.10"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "alpine:3.10",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM alpine:$ALPINE_TAG",
+      "Location": [
+        {
+          "Start": {
+            "Line": 4,
+            "Character": 0
+          },
+          "End": {
+            "Line": 4,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "alpine:3.10"
+      },
+      "Commands": null
+    }
+  ]
+}
