@@ -1,0 +1,28 @@
+ARG BASE_IMAGE=busybox:latest
+ARG META_BUT_ALSO_LOCAL=global-value
+
+FROM $META_BUT_ALSO_LOCAL
+
+FROM $BASE_IMAGE
+
+LABEL empty-because-its-a-meta-arg=$BASE_IMAGE
+
+LABEL empty-because-defined-later=$VERSION
+
+ARG VERSION=1.0.0
+
+# Should be populated properly
+LABEL version=$VERSION
+
+# Should expand to empty string unless set via --build-arg
+ARG REVISION
+
+# Should expand, revision might be empty
+ENV VERSION_REVISION=${VERSION}+${REVISION}
+
+# ENV values should also expand
+LABEL version-revision=$VERSION_REVISION
+
+ARG META_BUT_ALSO_LOCAL=local-value
+
+LABEL should-take-the-local-value=$META_BUT_ALSO_LOCAL

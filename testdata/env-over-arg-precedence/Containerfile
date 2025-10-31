@@ -1,0 +1,13 @@
+FROM scratch
+
+ENV VERSION=1.0.0
+ARG VERSION=2.0.0
+
+# ENV takes precedence over ARG, so we expect 1.0.0 here
+LABEL version=$VERSION
+
+# Even when empty
+ENV EMPTY=
+ARG EMPTY="not empty"
+
+LABEL empty=$EMPTY
