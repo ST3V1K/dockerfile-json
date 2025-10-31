@@ -1,0 +1,8 @@
+ARG VERSION=1.0.0
+
+FROM scratch
+
+# An ARG with no default takes the value of the matching meta arg
+ARG VERSION
+
+LABEL version=$VERSION

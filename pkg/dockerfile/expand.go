@@ -14,10 +14,11 @@ func (d *Dockerfile) Expand(env SingleWordExpander) {
 }
 
 func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
-	expandMetaArgs := d.metaArgsEnvExpander(env)
+	metaArgs := d.buildMetaArgs(env)
 	for i, stage := range d.Stages {
-		// Ignore error, expandMetaArgs never errors
-		d.Stages[i].BaseName, _ = expandMetaArgs(d.Stages[i].BaseName)
+		d.Stages[i].BaseName = os.Expand(d.Stages[i].BaseName, func(varname string) string {
+			return metaArgs[varname]
+		})
 
 		localArgs := make(map[string]string)
 		localEnvs := make(map[string]string)
@@ -54,6 +55,11 @@ func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
 					if val, err := env(arg.Key); err == nil {
 						// Override with externally supplied arg value
 						arg.Value = &val
+					} else if arg.Value == nil {
+						// No default value and no external value - inherit from meta arg
+						if metaVal, ok := metaArgs[arg.Key]; ok {
+							arg.Value = &metaVal
+						}
 					}
 					if arg.Value != nil {
 						localArgs[arg.Key] = *arg.Value
@@ -64,14 +70,8 @@ func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
 	}
 }
 
-func (d *Dockerfile) metaArgsEnvExpander(env instructions.SingleWordExpander) instructions.SingleWordExpander {
+func (d *Dockerfile) buildMetaArgs(env instructions.SingleWordExpander) map[string]string {
 	metaArgs := make(map[string]string, len(d.MetaArgs))
-	expandMetaArgs := func(s string) string {
-		return os.Expand(s, func(varname string) string {
-			// Expand to metaArg value or empty string (if undefined)
-			return metaArgs[varname]
-		})
-	}
 	for _, arg := range d.MetaArgs {
 		if defaultValue := arg.DefaultValue; defaultValue != nil {
 			metaArgs[arg.Key] = *defaultValue
@@ -84,13 +84,13 @@ func (d *Dockerfile) metaArgsEnvExpander(env instructions.SingleWordExpander) in
 		}
 
 		if arg.Value != nil {
-			exp := expandMetaArgs(*arg.Value)
+			exp := os.Expand(*arg.Value, func(varname string) string {
+				return metaArgs[varname]
+			})
 			arg.Value = &exp
 			metaArgs[arg.Key] = exp
 		}
 	}
 
-	return func(key string) (string, error) {
-		return expandMetaArgs(key), nil
-	}
+	return metaArgs
 }
