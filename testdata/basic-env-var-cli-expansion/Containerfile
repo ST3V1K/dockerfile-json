@@ -1,0 +1,4 @@
+FROM scratch
+
+# Has the value provided by the --env CLI parameter
+LABEL version=${VERSION}

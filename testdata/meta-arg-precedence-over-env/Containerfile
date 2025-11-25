@@ -1,0 +1,7 @@
+ARG ALPINE_TAG=3.10
+
+FROM alpine:${ALPINE_TAG} AS build
+# The env should not override the build arg value for the MetaArgs
+# that is used for expansion of stage names/images. 
+# The value of the env variable ALPINE_TAG should also not be overriden even if --env CLI value provided
+ENV ALPINE_TAG=5.10
