@@ -1,0 +1,4 @@
+--env
+VERSION=2.0.0
+
+--expand-vars=false

@@ -36,8 +36,12 @@ dockerfile-json [PATHS...]
 Usage of dockerfile-json:
   -build-arg value
     	a key/value pair KEY[=VALUE]
+  -env value
+    	a key/value pair KEY[=VALUE]
   -expand-build-args
-    	expand build args (default true)
+    	DEPRECATED: use --expand-vars (expands ARG and ENV variables) (default true)
+  -expand-vars
+    	expand build ARGs and ENV variables (default true)
   -jsonpath string
     	select parts of the output using JSONPath (https://goessner.net/articles/JsonPath)
   -jsonpath-raw

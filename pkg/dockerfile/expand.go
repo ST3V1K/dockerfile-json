@@ -8,13 +8,14 @@ import (
 
 type SingleWordExpander instructions.SingleWordExpander
 
-func (d *Dockerfile) Expand(env SingleWordExpander) {
-	d.expand(instructions.SingleWordExpander(env))
+func (d *Dockerfile) Expand(argExp, envExp SingleWordExpander) {
+	d.expand(instructions.SingleWordExpander(argExp), instructions.SingleWordExpander(envExp))
 	d.analyzeStages()
 }
 
-func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
-	metaArgs := d.buildMetaArgs(env)
+func (d *Dockerfile) expand(argExp, envExp instructions.SingleWordExpander) {
+	// Should be created only from the build args, no env variables here
+	metaArgs := d.buildMetaArgs(argExp)
 	for i, stage := range d.Stages {
 		d.Stages[i].BaseName = os.Expand(d.Stages[i].BaseName, func(varname string) string {
 			return metaArgs[varname]
@@ -25,9 +26,13 @@ func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
 
 		expandLocalVars := func(s string) (string, error) {
 			expanded := os.Expand(s, func(varname string) string {
-				// ENVs take precedence over ARGs
+				// Containerfile defined ENVs take precedence over ENV variables defined through CLI (--env) and ARGs
 				if envVal, ok := localEnvs[varname]; ok {
 					return envVal
+				}
+				// Env variables provided from CLI
+				if cliEnvVal, err := envExp(varname); err == nil {
+					return cliEnvVal
 				}
 				if argVal, ok := localArgs[varname]; ok {
 					return argVal
@@ -52,7 +57,7 @@ func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
 			case *instructions.ArgCommand:
 				for i := range command.Args {
 					arg := &command.Args[i]
-					if val, err := env(arg.Key); err == nil {
+					if val, err := argExp(arg.Key); err == nil {
 						// Override with externally supplied arg value
 						arg.Value = &val
 					} else if arg.Value == nil {
@@ -70,14 +75,14 @@ func (d *Dockerfile) expand(env instructions.SingleWordExpander) {
 	}
 }
 
-func (d *Dockerfile) buildMetaArgs(env instructions.SingleWordExpander) map[string]string {
+func (d *Dockerfile) buildMetaArgs(argExp instructions.SingleWordExpander) map[string]string {
 	metaArgs := make(map[string]string, len(d.MetaArgs))
 	for _, arg := range d.MetaArgs {
 		if defaultValue := arg.DefaultValue; defaultValue != nil {
 			metaArgs[arg.Key] = *defaultValue
 		}
 
-		if value, err := env(arg.Key); err == nil {
+		if value, err := argExp(arg.Key); err == nil {
 			arg.ProvidedValue = &value
 			metaArgs[arg.Key] = value
 			arg.Value = &value

@@ -1,0 +1,5 @@
+--env
+ALPINE_TAG=10.10
+
+--build-arg
+ALPINE_TAG=1.10

@@ -21,6 +21,7 @@ var config struct {
 	JSONPath       jsonpath.FilterFunc
 	JSONPathRaw    bool
 	BuildArgs      AssignmentsMap
+	EnvVars        AssignmentsMap
 	NonzeroExit    bool
 }
 
@@ -35,10 +36,13 @@ func init() {
 
 	config.Expand = true
 	flag.BoolVar(&config.Quiet, "quiet", config.Quiet, "suppress log output (stderr)")
-	flag.BoolVar(&config.Expand, "expand-build-args", config.Expand, "expand build args")
+	flag.BoolVar(&config.Expand, "expand-build-args", config.Expand, "DEPRECATED: use --expand-vars (expands ARG and ENV variables)")
+	flag.BoolVar(&config.Expand, "expand-vars", config.Expand, "expand build ARGs and ENV variables")
 	flag.StringVar(&config.JSONPathString, "jsonpath", config.JSONPathString, "select parts of the output using JSONPath (https://goessner.net/articles/JsonPath)")
 	flag.BoolVar(&config.JSONPathRaw, "jsonpath-raw", config.JSONPathRaw, "when using JSONPath, output raw strings, not JSON values")
 	flag.Var(&config.BuildArgs, "build-arg", config.BuildArgs.Help())
+	flag.Var(&config.EnvVars, "env", config.EnvVars.Help())
+
 }
 
 func parseFlags() {
@@ -64,8 +68,8 @@ func parseFlags() {
 	}
 }
 
-func buildArgEnvExpander() dockerfile.SingleWordExpander {
-	env := make(map[string]string, len(config.BuildArgs.Values))
+func buildArgExpander() dockerfile.SingleWordExpander {
+	args := make(map[string]string, len(config.BuildArgs.Values))
 
 	// Detect user's os and arch
 	buildOS := runtime.GOOS
@@ -85,10 +89,31 @@ func buildArgEnvExpander() dockerfile.SingleWordExpander {
 
 	// Add the builtin args to the environment
 	for key, value := range builtinArgs {
-		env[key] = value
+		args[key] = value
 	}
 
 	for key, value := range config.BuildArgs.Values {
+		if value != nil {
+			args[key] = *value
+			continue
+		}
+		if value, ok := os.LookupEnv(key); ok {
+			args[key] = value
+		}
+	}
+
+	return func(word string) (string, error) {
+		if value, ok := args[word]; ok {
+			return value, nil
+		}
+		return "", fmt.Errorf("not defined: $%s", word)
+	}
+}
+
+func envExpander() dockerfile.SingleWordExpander {
+	env := make(map[string]string, len(config.EnvVars.Values))
+
+	for key, value := range config.EnvVars.Values {
 		if value != nil {
 			env[key] = *value
 			continue
@@ -97,6 +122,7 @@ func buildArgEnvExpander() dockerfile.SingleWordExpander {
 			env[key] = value
 		}
 	}
+
 	return func(word string) (string, error) {
 		if value, ok := env[word]; ok {
 			return value, nil
@@ -119,9 +145,10 @@ func main() {
 		dockerfiles = append(dockerfiles, dockerfile)
 	}
 	if config.Expand {
-		env := buildArgEnvExpander()
+		argExp := buildArgExpander()
+		envExp := envExpander()
 		for _, dockerfile := range dockerfiles {
-			dockerfile.Expand(env)
+			dockerfile.Expand(argExp, envExp)
 		}
 	}
 	switch {

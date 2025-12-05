@@ -1,0 +1,51 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "ALPINE_TAG",
+      "DefaultValue": "3.10",
+      "ProvidedValue": null,
+      "Value": "3.10"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "build",
+      "OrigCmd": "FROM",
+      "BaseName": "alpine:3.10",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM alpine:${ALPINE_TAG} AS build",
+      "Location": [
+        {
+          "Start": {
+            "Line": 3,
+            "Character": 0
+          },
+          "End": {
+            "Line": 3,
+            "Character": 0
+          }
+        }
+      ],
+      "As": "build",
+      "From": {
+        "Image": "alpine:3.10"
+      },
+      "Commands": [
+        {
+          "Env": [
+            {
+              "Key": "ALPINE_TAG",
+              "NoDelim": false,
+              "Value": "5.10"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ENV",
+          "NetworkMode": "",
+          "Security": ""
+        }
+      ]
+    }
+  ]
+}
