@@ -2,6 +2,7 @@ package dockerfile
 
 import (
 	"os"
+	"sort"
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 )
@@ -98,4 +99,35 @@ func (d *Dockerfile) buildMetaArgs(argExp instructions.SingleWordExpander) map[s
 	}
 
 	return metaArgs
+}
+
+func (d *Dockerfile) InjectEnv(envs map[string]string) {
+	if len(envs) == 0 {
+		return
+	}
+
+	keysToInject := make([]string, 0, len(envs))
+	for k := range envs {
+		keysToInject = append(keysToInject, k)
+	}
+	sort.Strings(keysToInject)
+
+	kvps := make([]instructions.KeyValuePair, 0, len(keysToInject))
+	for _, k := range keysToInject {
+		kvps = append(kvps, instructions.KeyValuePair{
+			Key:     k,
+			Value:   envs[k],
+			NoDelim: false,
+		})
+	}
+
+	for i := range d.Stages {
+		cmd := Command{
+			Command: &instructions.EnvCommand{
+				Env: kvps,
+			},
+			Name: "ENV",
+		}
+		d.Stages[i].Commands = append([]*Command{&cmd}, d.Stages[i].Commands...)
+	}
 }

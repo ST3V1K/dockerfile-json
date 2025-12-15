@@ -21,7 +21,10 @@ func (d *Dockerfile) analyzeStages() {
 			seenStageNames[stage.Stage.Name] = i
 		}
 		for i, command := range stage.Commands {
-			stage.Commands[i].Name = command.Command.Name()
+			// Only set Name if it's not already set (e.g., by InjectEnv)
+			if stage.Commands[i].Name == "" {
+				stage.Commands[i].Name = command.Command.Name()
+			}
 		}
 	}
 	return
