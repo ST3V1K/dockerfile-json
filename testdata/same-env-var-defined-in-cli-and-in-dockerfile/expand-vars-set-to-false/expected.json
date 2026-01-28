@@ -29,6 +29,32 @@
             {
               "Key": "VERSION",
               "NoDelim": false,
+              "Value": "2.0.0"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ENV",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "first-version",
+              "NoDelim": false,
+              "Value": "${VERSION}"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Env": [
+            {
+              "Key": "VERSION",
+              "NoDelim": false,
               "Value": "1.0.0"
             }
           ],
@@ -42,7 +68,7 @@
             {
               "Key": "version",
               "NoDelim": false,
-              "Value": "1.0.0"
+              "Value": "${VERSION}"
             }
           ],
           "Mounts": null,

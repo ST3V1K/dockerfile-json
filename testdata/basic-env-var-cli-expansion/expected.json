@@ -25,6 +25,19 @@
       },
       "Commands": [
         {
+          "Env": [
+            {
+              "Key": "VERSION",
+              "NoDelim": false,
+              "Value": "2.0.0"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ENV",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
           "Labels": [
             {
               "Key": "version",

@@ -37,6 +37,19 @@
             {
               "Key": "ALPINE_TAG",
               "NoDelim": false,
+              "Value": "10.10"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ENV",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Env": [
+            {
+              "Key": "ALPINE_TAG",
+              "NoDelim": false,
               "Value": "5.10"
             }
           ],

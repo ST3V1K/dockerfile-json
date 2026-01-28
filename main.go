@@ -144,9 +144,26 @@ func main() {
 		}
 		dockerfiles = append(dockerfiles, dockerfile)
 	}
+
+	if len(config.EnvVars.Values) > 0 {
+		envsToInject := make(map[string]string)
+		for key, value := range config.EnvVars.Values {
+			if value != nil {
+				envsToInject[key] = *value
+			} else if value, ok := os.LookupEnv(key); ok {
+				// If the value was not provided e.g --env FOO, then value is taken from host
+				envsToInject[key] = value
+			}
+		}
+		for _, dockerfile := range dockerfiles {
+			dockerfile.InjectEnv(envsToInject)
+		}
+	}
+
 	if config.Expand {
 		argExp := buildArgExpander()
 		envExp := envExpander()
+
 		for _, dockerfile := range dockerfiles {
 			dockerfile.Expand(argExp, envExp)
 		}
