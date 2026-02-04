@@ -9,13 +9,12 @@ import (
 
 type SingleWordExpander instructions.SingleWordExpander
 
-func (d *Dockerfile) Expand(argExp, envExp SingleWordExpander) {
-	d.expand(instructions.SingleWordExpander(argExp), instructions.SingleWordExpander(envExp))
+func (d *Dockerfile) Expand(argExp SingleWordExpander) {
+	d.expand(instructions.SingleWordExpander(argExp))
 	d.analyzeStages()
 }
 
-func (d *Dockerfile) expand(argExp, envExp instructions.SingleWordExpander) {
-	// Should be created only from the build args, no env variables here
+func (d *Dockerfile) expand(argExp instructions.SingleWordExpander) {
 	metaArgs := d.buildMetaArgs(argExp)
 	for i, stage := range d.Stages {
 		d.Stages[i].BaseName = os.Expand(d.Stages[i].BaseName, func(varname string) string {
@@ -27,13 +26,9 @@ func (d *Dockerfile) expand(argExp, envExp instructions.SingleWordExpander) {
 
 		expandLocalVars := func(s string) (string, error) {
 			expanded := os.Expand(s, func(varname string) string {
-				// Containerfile defined ENVs take precedence over ENV variables defined through CLI (--env) and ARGs
+				// ENVs take precedence over ARGs
 				if envVal, ok := localEnvs[varname]; ok {
 					return envVal
-				}
-				// Env variables provided from CLI
-				if cliEnvVal, err := envExp(varname); err == nil {
-					return cliEnvVal
 				}
 				if argVal, ok := localArgs[varname]; ok {
 					return argVal
