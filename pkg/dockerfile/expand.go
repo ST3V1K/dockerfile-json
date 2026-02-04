@@ -9,6 +9,10 @@ import (
 
 type SingleWordExpander instructions.SingleWordExpander
 
+// Expand the ENV and ARG variable references in instructions.
+//
+// When injecting additional environment variables, InjectEnv()
+// must be called first in order for Expand() to work properly.
 func (d *Dockerfile) Expand(argExp SingleWordExpander) {
 	d.expand(instructions.SingleWordExpander(argExp))
 	d.analyzeStages()
