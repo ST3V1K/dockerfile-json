@@ -26,6 +26,29 @@ go get -u github.com/keilerkonzept/dockerfile-json
 
 Or [download the binary for your platform](https://github.com/keilerkonzept/dockerfile-json/releases/latest) from the releases page.
 
+### Build tags
+
+The `dfrunsecurity` build tag is optional but recommended when building from source.
+
+With the build tag:
+
+```bash
+go build -tags dfrunsecurity
+```
+
+- Supports parsing files with `RUN --security=insecure` and `RUN --security=sandbox` flags
+- The `Security` field in the JSON output will contain the parsed value (defaults to `sandbox`)
+
+Without the build tag:
+
+```bash
+go build
+```
+
+- Cannot parse files containing `RUN --security=*` flags (will return an error)
+- The `Security` field in JSON output will always be an empty string
+- Sufficient for use with e.g. Podman or Buildah, which do not support the `--security` flag
+
 ## Usage
 
 ### CLI
@@ -356,7 +379,7 @@ $ dockerfile-json --expand-build-args=false --jsonpath=..BaseName Dockerfile
 ### Running tests
 
 ```bash
-go test -tags=dfrunsecurity -v ./...
+go test -v ./...
 ```
 
 ### Adding integration tests
@@ -382,10 +405,10 @@ Generate expected outputs:
 
 ```bash
 # Generate for all test cases
-UPDATE_TESTDATA=1 go test -tags=dfrunsecurity
+UPDATE_TESTDATA=1 go test
 
 # Or generate for specific test case
-UPDATE_TESTDATA=1 go test -tags=dfrunsecurity -run=TestIntegration/my-scenario/variant-1
+UPDATE_TESTDATA=1 go test -run=TestIntegration/my-scenario/variant-1
 ```
 
 In this mode (`UPDATE_TESTDATA=1`), tests overwrite the `expected.json` files instead
@@ -398,6 +421,6 @@ The update mode is also useful when making changes to existing behavior. Re-gene
 the output files and verify that your changes achieved what you intended:
 
 ```bash
-UPDATE_TESTDATA=1 go test -tags=dfrunsecurity
+UPDATE_TESTDATA=1 go test
 git diff testdata/  # Review changes
 ```
