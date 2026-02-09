@@ -110,27 +110,6 @@ func buildArgExpander() dockerfile.SingleWordExpander {
 	}
 }
 
-func envExpander() dockerfile.SingleWordExpander {
-	env := make(map[string]string, len(config.EnvVars.Values))
-
-	for key, value := range config.EnvVars.Values {
-		if value != nil {
-			env[key] = *value
-			continue
-		}
-		if value, ok := os.LookupEnv(key); ok {
-			env[key] = value
-		}
-	}
-
-	return func(word string) (string, error) {
-		if value, ok := env[word]; ok {
-			return value, nil
-		}
-		return "", fmt.Errorf("not defined: $%s", word)
-	}
-}
-
 func main() {
 	parseFlags()
 
@@ -162,10 +141,8 @@ func main() {
 
 	if config.Expand {
 		argExp := buildArgExpander()
-		envExp := envExpander()
-
 		for _, dockerfile := range dockerfiles {
-			dockerfile.Expand(argExp, envExp)
+			dockerfile.Expand(argExp)
 		}
 	}
 	switch {
