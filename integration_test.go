@@ -15,7 +15,7 @@ import (
 
 // TestIntegration discovers and runs all integration test cases in testdata/
 func TestIntegration(t *testing.T) {
-	binaryPath := buildBinary(t)
+	binaryPath := buildBinary(t, "-tags=dfrunsecurity")
 	defer os.Remove(binaryPath)
 
 	testCases := discoverTestCases(t)
@@ -30,6 +30,60 @@ func TestIntegration(t *testing.T) {
 	}
 }
 
+// TestWithoutRunsecurity verifies that compilation without -tags=dfrunsecurity is possible.
+func TestWithoutRunsecurity(t *testing.T) {
+	// Compiling without -tags=dfrunsecurity should succeed
+	binaryPath := buildBinary(t)
+
+	t.Run("SuccessfulParse", func(t *testing.T) {
+		containerfilePath := writeContainerfile(t, `
+FROM alpine
+
+RUN echo hi
+		`)
+
+		// Parsing a Containerfile without a 'RUN --security' instruction should succeed.
+		// The Security field in the JSON output should be empty.
+		cmd := exec.Command(binaryPath, "-jsonpath", ".Stages[0].Commands[0].Security", containerfilePath)
+
+		outBytes, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		output := strings.TrimSpace(string(outBytes))
+		if output != `""` {
+			t.Fatalf(`Expected Security attribute to be "", got %s`, output)
+		}
+	})
+
+	t.Run("FailedParse", func(t *testing.T) {
+		containerfilePath := writeContainerfile(t, `
+FROM alpine
+
+RUN --security=sandbox echo hi
+		`)
+
+		// Parsing a Containerfile with a 'RUN --security' instruction should fail
+		cmd := exec.Command(binaryPath, containerfilePath)
+		outBytes, err := cmd.CombinedOutput()
+
+		expectedError := "dockerfile parse error on line 4: unknown flag: --security"
+
+		switch err.(type) {
+		case *exec.ExitError:
+			output := strings.TrimSpace(string(outBytes))
+			if !strings.Contains(output, expectedError) {
+				t.Fatalf("unexpected error: %s", output)
+			}
+		case nil:
+			t.Fatal("expected command to fail, but it succeeded")
+		default:
+			t.Fatalf("expected command to result in ExitError, got %#v", err)
+		}
+	})
+}
+
 // testCase represents a single integration test case
 type testCase struct {
 	name         string
@@ -40,11 +94,15 @@ type testCase struct {
 }
 
 // buildBinary builds the dockerfile-json binary and returns its path
-func buildBinary(t *testing.T) string {
+func buildBinary(t *testing.T, buildFlags ...string) string {
 	t.Helper()
 
 	binaryPath := filepath.Join(t.TempDir(), "dockerfile-json")
-	cmd := exec.Command("go", "build", "-tags=dfrunsecurity", "-o", binaryPath, ".")
+	go_build_args := []string{"build", "-o", binaryPath}
+	go_build_args = append(go_build_args, buildFlags...)
+
+	cmd := exec.Command("go", go_build_args...)
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Failed to build binary: %v\nOutput: %s", err, output)
@@ -206,4 +264,17 @@ func compareJSON(t *testing.T, expected, actual []byte) error {
 	}
 
 	return nil
+}
+
+// Writes the specified content into <t.TempDir()>/Containerfile and returns the Containerfile path.
+func writeContainerfile(t *testing.T, content string) string {
+	tmpdir := t.TempDir()
+	path := filepath.Join(tmpdir, "Containerfile")
+
+	err := os.WriteFile(path, []byte(content), 0644)
+	if err != nil {
+		t.Fatalf("failed to write %s: %s", path, err)
+	}
+
+	return path
 }

@@ -53,7 +53,7 @@ func ParseReader(r io.Reader) (*Dockerfile, error) {
 			case *instructions.RunCommand:
 				outCommand.Mounts = instructions.GetMounts(command)
 				outCommand.NetworkMode = instructions.GetNetwork(command)
-				outCommand.Security = instructions.GetSecurity(command)
+				outCommand.Security = getSecurity(command)
 			}
 			outStage.Commands = append(outStage.Commands, outCommand)
 		}
