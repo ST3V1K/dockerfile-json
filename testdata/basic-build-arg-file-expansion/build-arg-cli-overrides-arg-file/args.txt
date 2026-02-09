@@ -1,0 +1,5 @@
+--build-arg-file
+testdata/basic-build-arg-file-expansion/build-arg-cli-overrides-arg-file/argfile.conf
+
+--build-arg
+VERSION=2.0.0

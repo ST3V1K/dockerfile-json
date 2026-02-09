@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/keilerkonzept/dockerfile-json/pkg/buildargs"
 	"github.com/keilerkonzept/dockerfile-json/pkg/dockerfile"
 	"github.com/yalp/jsonpath"
 )
@@ -21,6 +22,7 @@ var config struct {
 	JSONPath       jsonpath.FilterFunc
 	JSONPathRaw    bool
 	BuildArgs      AssignmentsMap
+	BuildArgFile   string
 	EnvVars        AssignmentsMap
 	NonzeroExit    bool
 }
@@ -41,6 +43,8 @@ func init() {
 	flag.StringVar(&config.JSONPathString, "jsonpath", config.JSONPathString, "select parts of the output using JSONPath (https://goessner.net/articles/JsonPath)")
 	flag.BoolVar(&config.JSONPathRaw, "jsonpath-raw", config.JSONPathRaw, "when using JSONPath, output raw strings, not JSON values")
 	flag.Var(&config.BuildArgs, "build-arg", config.BuildArgs.Help())
+	flag.StringVar(&config.BuildArgFile, "build-arg-file", "",
+		"path to a file containing build-args in the form argument=value (blank lines and # comments are ignored)")
 	flag.Var(&config.EnvVars, "env", config.EnvVars.Help())
 
 }
@@ -68,7 +72,7 @@ func parseFlags() {
 	}
 }
 
-func buildArgExpander() dockerfile.SingleWordExpander {
+func buildArgExpander() (dockerfile.SingleWordExpander, error) {
 	args := make(map[string]string, len(config.BuildArgs.Values))
 
 	// Detect user's os and arch
@@ -92,6 +96,18 @@ func buildArgExpander() dockerfile.SingleWordExpander {
 		args[key] = value
 	}
 
+	if config.BuildArgFile != "" {
+		fileArgs, err := buildargs.ParseBuildArgFile(config.BuildArgFile)
+		if err != nil {
+			return nil, fmt.Errorf("parse build arg file %q: %w", config.BuildArgFile, err)
+		}
+		for key, value := range fileArgs {
+			args[key] = value
+		}
+	}
+
+	// Build args specified with --build-arg take precedence over build args
+	// defined in build arg file
 	for key, value := range config.BuildArgs.Values {
 		if value != nil {
 			args[key] = *value
@@ -107,7 +123,7 @@ func buildArgExpander() dockerfile.SingleWordExpander {
 			return value, nil
 		}
 		return "", fmt.Errorf("not defined: $%s", word)
-	}
+	}, nil
 }
 
 func main() {
@@ -140,7 +156,10 @@ func main() {
 	}
 
 	if config.Expand {
-		argExp := buildArgExpander()
+		argExp, err := buildArgExpander()
+		if err != nil {
+			log.Fatalf("error: %v", err)
+		}
 		for _, dockerfile := range dockerfiles {
 			dockerfile.Expand(argExp)
 		}

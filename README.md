@@ -59,6 +59,8 @@ dockerfile-json [PATHS...]
 Usage of dockerfile-json:
   -build-arg value
     	a key/value pair KEY[=VALUE]
+  -build-arg-file string
+    	path to a file with containing build-args in the form argument=value (blank lines and # comments are ignored)
   -env value
     	a key/value pair KEY[=VALUE]
   -expand-build-args
