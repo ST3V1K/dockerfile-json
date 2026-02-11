@@ -8,8 +8,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"runtime"
 
+	"github.com/containerd/platforms"
 	"github.com/keilerkonzept/dockerfile-json/pkg/buildargs"
 	"github.com/keilerkonzept/dockerfile-json/pkg/dockerfile"
 	"github.com/yalp/jsonpath"
@@ -75,20 +75,20 @@ func parseFlags() {
 func buildArgExpander() (dockerfile.SingleWordExpander, error) {
 	args := make(map[string]string, len(config.BuildArgs.Values))
 
-	// Detect user's os and arch
-	buildOS := runtime.GOOS
-	buildArch := runtime.GOARCH
-	buildPlatform := buildOS + "/" + buildArch
+	platformSpec := platforms.DefaultSpec()
+	buildPlatform := platforms.Format(platformSpec)
 
 	// Define built-in Docker ARG variables
 	// See https://docs.docker.com/build/building/multi-platform/
 	builtinArgs := map[string]string{
-		"TARGETPLATFORM": buildPlatform,
-		"TARGETARCH":     buildArch,
-		"TARGETOS":       buildOS,
 		"BUILDPLATFORM":  buildPlatform,
-		"BUILDARCH":      buildArch,
-		"BUILDOS":        buildOS,
+		"BUILDOS":        platformSpec.OS,
+		"BUILDARCH":      platformSpec.Architecture,
+		"BUILDVARIANT":   platformSpec.Variant,
+		"TARGETPLATFORM": buildPlatform,
+		"TARGETOS":       platformSpec.OS,
+		"TARGETARCH":     platformSpec.Architecture,
+		"TARGETVARIANT":  platformSpec.Variant,
 	}
 
 	// Add the builtin args to the environment
