@@ -75,7 +75,7 @@ func parseFlags() {
 func buildArgExpander() (dockerfile.SingleWordExpander, error) {
 	args := make(map[string]string, len(config.BuildArgs.Values))
 
-	platformSpec := platforms.DefaultSpec()
+	platformSpec := platforms.Normalize(platforms.DefaultSpec())
 	buildPlatform := platforms.Format(platformSpec)
 
 	// Define built-in Docker ARG variables
