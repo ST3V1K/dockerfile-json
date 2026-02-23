@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -53,7 +53,7 @@ func parseFlags() {
 	flag.Parse()
 
 	if config.Quiet {
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 	}
 
 	if flag.NArg() == 0 {
@@ -75,7 +75,7 @@ func parseFlags() {
 func buildArgExpander() (dockerfile.SingleWordExpander, error) {
 	args := make(map[string]string, len(config.BuildArgs.Values))
 
-	platformSpec := platforms.DefaultSpec()
+	platformSpec := platforms.Normalize(platforms.DefaultSpec())
 	buildPlatform := platforms.Format(platformSpec)
 
 	// Define built-in Docker ARG variables
