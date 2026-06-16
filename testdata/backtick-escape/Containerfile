@@ -1,0 +1,7 @@
+# escape=`
+FROM scratch
+
+ARG ESCAPED_QUOTES="hello, `"world`""
+LABEL escaped-quotes="$ESCAPED_QUOTES"
+
+LABEL path-with-space=C:\Program` Files\app
