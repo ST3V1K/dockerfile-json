@@ -1,0 +1,4 @@
+ARG TARGETARCH=amd64
+FROM --platform=linux/amd64 alpine AS base-amd64
+FROM --platform=linux/arm64 alpine AS base-arm64
+FROM base-${TARGETARCH} AS base
