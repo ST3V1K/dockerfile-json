@@ -1,15 +1,53 @@
 package dockerfile
 
 import (
-	"os"
 	"sort"
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
+	"github.com/moby/buildkit/frontend/dockerfile/shell"
 )
+
+type envGetter struct {
+	envs map[string]string
+	args map[string]string
+}
+
+func (e *envGetter) Get(key string) (string, bool) {
+	if e.envs != nil {
+		if v, ok := e.envs[key]; ok {
+			return v, true
+		}
+	}
+	if e.args != nil {
+		if v, ok := e.args[key]; ok {
+			return v, true
+		}
+	}
+	return "", false
+}
+
+func (e *envGetter) Keys() []string {
+	seen := make(map[string]struct{})
+	keys := make([]string, 0, len(e.envs)+len(e.args))
+	for k := range e.envs {
+		keys = append(keys, k)
+		seen[k] = struct{}{}
+	}
+	for k := range e.args {
+		if _, ok := seen[k]; !ok {
+			keys = append(keys, k)
+		}
+	}
+	return keys
+}
 
 type SingleWordExpander instructions.SingleWordExpander
 
-// Expand the ENV and ARG variable references in instructions.
+// Use the dockerfile shell lexer to process commands that support variable expansion.
+//
+// This has the following effects:
+// - Interpret single quotes, double quotes and escape sequences
+// - Expand ENV and ARG variable references
 //
 // When injecting additional environment variables, InjectEnv()
 // must be called first in order for Expand() to work properly.
@@ -19,33 +57,32 @@ func (d *Dockerfile) Expand(argExp SingleWordExpander) {
 }
 
 func (d *Dockerfile) expand(argExp instructions.SingleWordExpander) {
+	lex := shell.NewLex(d.escapeToken)
+
 	metaArgs := d.buildMetaArgs(argExp)
+	metaEnv := &envGetter{envs: metaArgs}
+
 	for i, stage := range d.Stages {
-		d.Stages[i].BaseName = os.Expand(d.Stages[i].BaseName, func(varname string) string {
-			return metaArgs[varname]
-		})
+		// ProcessWord errors on malformed shell syntax (unmatched quotes, bad substitutions).
+		// The Expand() API doesn't return errors; just keep the unexpanded value on error.
+		if expanded, _, err := lex.ProcessWord(d.Stages[i].BaseName, metaEnv); err == nil {
+			d.Stages[i].BaseName = expanded
+		}
 
 		localArgs := make(map[string]string)
 		localEnvs := make(map[string]string)
 
+		localEnv := &envGetter{envs: localEnvs, args: localArgs}
 		expandLocalVars := func(s string) (string, error) {
-			expanded := os.Expand(s, func(varname string) string {
-				// ENVs take precedence over ARGs
-				if envVal, ok := localEnvs[varname]; ok {
-					return envVal
-				}
-				if argVal, ok := localArgs[varname]; ok {
-					return argVal
-				}
-				return ""
-			})
-			return expanded, nil
+			expanded, _, err := lex.ProcessWord(s, localEnv)
+			return expanded, err
 		}
 
 		for i := range stage.Commands {
 			cmdExpander, ok := stage.Commands[i].Command.(instructions.SupportsSingleWordExpansion)
 			if ok {
-				cmdExpander.Expand(expandLocalVars)
+				// Keep the unexpanded value on errors, same rationale as above
+				_ = cmdExpander.Expand(expandLocalVars)
 			}
 
 			// *After* expanding, update local variables
@@ -76,7 +113,11 @@ func (d *Dockerfile) expand(argExp instructions.SingleWordExpander) {
 }
 
 func (d *Dockerfile) buildMetaArgs(argExp instructions.SingleWordExpander) map[string]string {
+	lex := shell.NewLex(d.escapeToken)
+
 	metaArgs := make(map[string]string, len(d.MetaArgs))
+	metaEnv := &envGetter{args: metaArgs}
+
 	for _, arg := range d.MetaArgs {
 		if defaultValue := arg.DefaultValue; defaultValue != nil {
 			metaArgs[arg.Key] = *defaultValue
@@ -89,11 +130,11 @@ func (d *Dockerfile) buildMetaArgs(argExp instructions.SingleWordExpander) map[s
 		}
 
 		if arg.Value != nil {
-			exp := os.Expand(*arg.Value, func(varname string) string {
-				return metaArgs[varname]
-			})
-			arg.Value = &exp
-			metaArgs[arg.Key] = exp
+			// Keep the unexpanded value on errors, same rationale as in expand()
+			if exp, _, err := lex.ProcessWord(*arg.Value, metaEnv); err == nil {
+				arg.Value = &exp
+				metaArgs[arg.Key] = exp
+			}
 		}
 	}
 

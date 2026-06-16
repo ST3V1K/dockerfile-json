@@ -27,7 +27,7 @@ func ParseReader(r io.Reader) (*Dockerfile, error) {
 	if err != nil {
 		return nil, fmt.Errorf("dockerfile/instructions.Parse %v", err)
 	}
-	var out Dockerfile
+	out := Dockerfile{escapeToken: result.EscapeToken}
 	for _, metaArg := range metaArgs {
 		metaArgOut := &MetaArg{ArgCommand: metaArg}
 		for _, kv := range metaArg.Args {

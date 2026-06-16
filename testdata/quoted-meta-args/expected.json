@@ -4,19 +4,19 @@
       "Key": "SINGLE_QUOTED",
       "DefaultValue": "'single quoted'",
       "ProvidedValue": null,
-      "Value": "'single quoted'"
+      "Value": "single quoted"
     },
     {
       "Key": "DOUBLE_QUOTED",
       "DefaultValue": "\"double quoted\"",
       "ProvidedValue": null,
-      "Value": "\"double quoted\""
+      "Value": "double quoted"
     },
     {
       "Key": "NESTED",
       "DefaultValue": "\"${SINGLE_QUOTED} and ${DOUBLE_QUOTED}\"",
       "ProvidedValue": null,
-      "Value": "\"'single quoted' and \"double quoted\"\""
+      "Value": "single quoted and double quoted"
     }
   ],
   "Stages": [
@@ -48,7 +48,7 @@
             {
               "Comment": "",
               "Key": "NESTED",
-              "Value": "\"'single quoted' and \"double quoted\"\""
+              "Value": "single quoted and double quoted"
             }
           ],
           "Mounts": null,
@@ -61,7 +61,7 @@
             {
               "Key": "nested",
               "NoDelim": false,
-              "Value": "\"\"'single quoted' and \"double quoted\"\"\""
+              "Value": "single quoted and double quoted"
             }
           ],
           "Mounts": null,

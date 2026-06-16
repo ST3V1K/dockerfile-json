@@ -29,7 +29,7 @@
             {
               "Key": "with.single.quotes",
               "NoDelim": false,
-              "Value": "'single quoted label'"
+              "Value": "single quoted label"
             }
           ],
           "Mounts": null,
@@ -42,7 +42,7 @@
             {
               "Key": "with.double.quotes",
               "NoDelim": false,
-              "Value": "\"double quoted label\""
+              "Value": "double quoted label"
             }
           ],
           "Mounts": null,
@@ -55,7 +55,7 @@
             {
               "Comment": "",
               "Key": "SINGLE_QUOTED",
-              "Value": "'single quoted arg'"
+              "Value": "single quoted arg"
             }
           ],
           "Mounts": null,
@@ -68,7 +68,7 @@
             {
               "Comment": "",
               "Key": "DOUBLE_QUOTED",
-              "Value": "\"double quoted arg\""
+              "Value": "double quoted arg"
             }
           ],
           "Mounts": null,
@@ -81,7 +81,7 @@
             {
               "Key": "unquoted.arg.1",
               "NoDelim": false,
-              "Value": "'single quoted arg'"
+              "Value": "single quoted arg"
             }
           ],
           "Mounts": null,
@@ -94,7 +94,7 @@
             {
               "Key": "unquoted.arg.2",
               "NoDelim": false,
-              "Value": "\"double quoted arg\""
+              "Value": "double quoted arg"
             }
           ],
           "Mounts": null,
@@ -107,7 +107,7 @@
             {
               "Key": "quoted.arg.1",
               "NoDelim": false,
-              "Value": "\"'single quoted arg'\""
+              "Value": "single quoted arg"
             }
           ],
           "Mounts": null,
@@ -120,7 +120,7 @@
             {
               "Key": "quoted.arg.2",
               "NoDelim": false,
-              "Value": "\"\"double quoted arg\"\""
+              "Value": "double quoted arg"
             }
           ],
           "Mounts": null,
@@ -133,7 +133,7 @@
             {
               "Key": "literal.argname.1",
               "NoDelim": false,
-              "Value": "''single quoted arg''"
+              "Value": "$SINGLE_QUOTED"
             }
           ],
           "Mounts": null,
@@ -146,7 +146,7 @@
             {
               "Key": "literal.argname.2",
               "NoDelim": false,
-              "Value": "'\"double quoted arg\"'"
+              "Value": "$DOUBLE_QUOTED"
             }
           ],
           "Mounts": null,
