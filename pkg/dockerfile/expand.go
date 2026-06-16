@@ -68,6 +68,9 @@ func (d *Dockerfile) expand(argExp instructions.SingleWordExpander) {
 		if expanded, _, err := lex.ProcessWord(d.Stages[i].BaseName, metaEnv); err == nil {
 			d.Stages[i].BaseName = expanded
 		}
+		if expanded, _, err := lex.ProcessWord(d.Stages[i].Platform, metaEnv); err == nil {
+			d.Stages[i].Platform = expanded
+		}
 
 		localArgs := make(map[string]string)
 		localEnvs := make(map[string]string)
