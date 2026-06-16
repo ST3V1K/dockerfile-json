@@ -11,11 +11,11 @@
       "Location": [
         {
           "Start": {
-            "Line": 1,
+            "Line": 2,
             "Character": 0
           },
           "End": {
-            "Line": 1,
+            "Line": 2,
             "Character": 0
           }
         }
@@ -25,24 +25,11 @@
       },
       "Commands": [
         {
-          "Env": [
-            {
-              "Key": "VERSION",
-              "NoDelim": false,
-              "Value": "1.0.0"
-            }
-          ],
-          "Mounts": null,
-          "Name": "ENV",
-          "NetworkMode": "",
-          "Security": ""
-        },
-        {
           "Args": [
             {
               "Comment": "",
-              "Key": "VERSION",
-              "Value": "2.0.0"
+              "Key": "ESCAPED_QUOTES",
+              "Value": "hello, \"world\""
             }
           ],
           "Mounts": null,
@@ -53,9 +40,9 @@
         {
           "Labels": [
             {
-              "Key": "version",
+              "Key": "escaped-quotes",
               "NoDelim": false,
-              "Value": "1.0.0"
+              "Value": "hello, \"world\""
             }
           ],
           "Mounts": null,
@@ -64,37 +51,11 @@
           "Security": ""
         },
         {
-          "Env": [
-            {
-              "Key": "EMPTY",
-              "NoDelim": false,
-              "Value": ""
-            }
-          ],
-          "Mounts": null,
-          "Name": "ENV",
-          "NetworkMode": "",
-          "Security": ""
-        },
-        {
-          "Args": [
-            {
-              "Comment": "",
-              "Key": "EMPTY",
-              "Value": "not empty"
-            }
-          ],
-          "Mounts": null,
-          "Name": "ARG",
-          "NetworkMode": "",
-          "Security": ""
-        },
-        {
           "Labels": [
             {
-              "Key": "empty",
+              "Key": "path-with-space",
               "NoDelim": false,
-              "Value": ""
+              "Value": "C:\\Program Files\\app"
             }
           ],
           "Mounts": null,

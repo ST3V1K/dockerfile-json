@@ -1,0 +1,4 @@
+--build-arg
+SINGLE_QUOTED='has quotes'
+--build-arg
+DOUBLE_QUOTED=$NOT_A_VARIABLE

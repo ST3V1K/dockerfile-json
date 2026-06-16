@@ -5,8 +5,9 @@ import (
 )
 
 type Dockerfile struct {
-	MetaArgs []*MetaArg
-	Stages   []*Stage
+	MetaArgs    []*MetaArg
+	Stages      []*Stage
+	escapeToken rune
 }
 
 type MetaArg struct {

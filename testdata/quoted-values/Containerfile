@@ -1,0 +1,16 @@
+FROM scratch
+
+LABEL with.single.quotes='single quoted label'
+LABEL with.double.quotes="double quoted label"
+
+ARG SINGLE_QUOTED='single quoted arg'
+ARG DOUBLE_QUOTED="double quoted arg"
+
+LABEL unquoted.arg.1=$SINGLE_QUOTED
+LABEL unquoted.arg.2=$DOUBLE_QUOTED
+
+LABEL quoted.arg.1="$SINGLE_QUOTED"
+LABEL quoted.arg.2="$DOUBLE_QUOTED"
+
+LABEL literal.argname.1='$SINGLE_QUOTED'
+LABEL literal.argname.2='$DOUBLE_QUOTED'
