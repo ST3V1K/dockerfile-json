@@ -119,22 +119,18 @@ func (d *Dockerfile) buildMetaArgs(argExp instructions.SingleWordExpander) map[s
 	metaEnv := &envGetter{args: metaArgs}
 
 	for _, arg := range d.MetaArgs {
-		if defaultValue := arg.DefaultValue; defaultValue != nil {
-			metaArgs[arg.Key] = *defaultValue
-		}
-
-		if value, err := argExp(arg.Key); err == nil {
-			arg.ProvidedValue = &value
-			metaArgs[arg.Key] = value
-			arg.Value = &value
-		}
-
-		if arg.Value != nil {
+		if val, err := argExp(arg.Key); err == nil {
+			arg.ProvidedValue = &val
+			// CLI-provided values are plain strings, don't expand them.
+			arg.Value = &val
+		} else if arg.Value != nil {
 			// Keep the unexpanded value on errors, same rationale as in expand()
 			if exp, _, err := lex.ProcessWord(*arg.Value, metaEnv); err == nil {
 				arg.Value = &exp
-				metaArgs[arg.Key] = exp
 			}
+		}
+		if arg.Value != nil {
+			metaArgs[arg.Key] = *arg.Value
 		}
 	}
 
