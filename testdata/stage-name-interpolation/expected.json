@@ -1,0 +1,90 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "TARGETARCH",
+      "DefaultValue": "amd64",
+      "ProvidedValue": "amd64",
+      "Value": "amd64"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "base-amd64",
+      "OrigCmd": "FROM",
+      "BaseName": "alpine",
+      "Platform": "linux/amd64",
+      "Comment": "",
+      "SourceCode": "FROM --platform=linux/amd64 alpine AS base-amd64",
+      "Location": [
+        {
+          "Start": {
+            "Line": 2,
+            "Character": 0
+          },
+          "End": {
+            "Line": 2,
+            "Character": 0
+          }
+        }
+      ],
+      "As": "base-amd64",
+      "From": {
+        "Image": "alpine"
+      },
+      "Commands": null
+    },
+    {
+      "Name": "base-arm64",
+      "OrigCmd": "FROM",
+      "BaseName": "alpine",
+      "Platform": "linux/arm64",
+      "Comment": "",
+      "SourceCode": "FROM --platform=linux/arm64 alpine AS base-arm64",
+      "Location": [
+        {
+          "Start": {
+            "Line": 3,
+            "Character": 0
+          },
+          "End": {
+            "Line": 3,
+            "Character": 0
+          }
+        }
+      ],
+      "As": "base-arm64",
+      "From": {
+        "Image": "alpine"
+      },
+      "Commands": null
+    },
+    {
+      "Name": "base",
+      "OrigCmd": "FROM",
+      "BaseName": "base-amd64",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM base-${TARGETARCH} AS base",
+      "Location": [
+        {
+          "Start": {
+            "Line": 4,
+            "Character": 0
+          },
+          "End": {
+            "Line": 4,
+            "Character": 0
+          }
+        }
+      ],
+      "As": "base",
+      "From": {
+        "Stage": {
+          "Named": "base-amd64",
+          "Index": 0
+        }
+      },
+      "Commands": null
+    }
+  ]
+}
