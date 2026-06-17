@@ -1,0 +1,36 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "PLATFORM",
+      "DefaultValue": "linux/amd64",
+      "ProvidedValue": null,
+      "Value": "linux/amd64"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "alpine",
+      "Platform": "linux/amd64",
+      "Comment": "",
+      "SourceCode": "FROM --platform=${PLATFORM} alpine",
+      "Location": [
+        {
+          "Start": {
+            "Line": 2,
+            "Character": 0
+          },
+          "End": {
+            "Line": 2,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "alpine"
+      },
+      "Commands": null
+    }
+  ]
+}
