@@ -51,7 +51,7 @@ github.com/planetscale/vtprotobuf/protohelpers
 # github.com/sirupsen/logrus v1.9.3
 ## explicit; go 1.13
 github.com/sirupsen/logrus
-# github.com/tonistiigi/go-csvvalue v0.0.0-20240710180619-ddb21b71c0b4
+# github.com/tonistiigi/go-csvvalue v0.0.0-20240814133006-030d3b2625d0
 ## explicit; go 1.16
 github.com/tonistiigi/go-csvvalue
 # github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0
