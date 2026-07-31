@@ -1,4 +1,4 @@
-ARG ALPINE_TAG=3.10
+ARG ALPINE_TAG=3.24
 
 FROM alpine:${ALPINE_TAG} AS build
 # The env should not override the build arg value for the MetaArgs
