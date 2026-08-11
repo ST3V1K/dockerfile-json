@@ -1,8 +1,6 @@
 module github.com/keilerkonzept/dockerfile-json
 
-go 1.23
-
-toolchain go1.23.1
+go 1.25.0
 
 require (
 	github.com/containerd/platforms v1.0.0-rc.2 // for ARM variant detection
@@ -24,7 +22,7 @@ require (
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tonistiigi/go-csvvalue v0.0.0-20240710180619-ddb21b71c0b4 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 )
 
