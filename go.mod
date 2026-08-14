@@ -25,7 +25,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tonistiigi/go-csvvalue v0.0.0-20240710180619-ddb21b71c0b4 // indirect
 	golang.org/x/sys v0.28.0 // indirect
-	google.golang.org/protobuf v1.35.2 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 )
 
 replace (
