@@ -2,7 +2,7 @@ module github.com/keilerkonzept/dockerfile-json
 
 go 1.23
 
-toolchain go1.23.1
+toolchain go1.27.0
 
 require (
 	github.com/containerd/platforms v1.0.0-rc.2 // for ARM variant detection
