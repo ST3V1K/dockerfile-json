@@ -5,30 +5,18 @@ PACKAGES := $(shell go list -f {{.Dir}} ./...)
 GOFILES  := $(addsuffix /*.go,$(PACKAGES))
 GOFILES  := $(wildcard $(GOFILES))
 
-.PHONY: clean release binaries README.md
+.PHONY: clean release binaries
 
 clean:
 	rm -rf binaries/
 	rm -rf release/
 
-release: README.md zip
-	git add README.template.md
+release: zip
 	git add README.md
 	git add Makefile
 	git commit -am "Release $(VERSION)" || true
 	git push
 	hub release create $(VERSION) -m "$(VERSION)" -a release/$(APP)_$(VERSION)_osx_x86_64.tar.gz -a release/$(APP)_$(VERSION)_windows_x86_64.zip -a release/$(APP)_$(VERSION)_linux_x86_64.tar.gz -a release/$(APP)_$(VERSION)_windows_x86_32.zip -a release/$(APP)_$(VERSION)_linux_x86_32.tar.gz -a release/$(APP)_$(VERSION)_linux_arm64.tar.gz
-
-README.md:
-	go build -tags=dfrunsecurity github.com/keilerkonzept/$(APP) && <README.template.md subst \
-		EXAMPLE_6="$$(./$(APP)  --expand-build-args=false --jsonpath=$$..BaseName examples/Dockerfile.3 | jq .)" \
-		EXAMPLE_5="$$(./$(APP) --jsonpath=$$..BaseName examples/Dockerfile.3 | jq .)" \
-		EXAMPLE_4="$$(./$(APP) --jsonpath=$$..Image --build-arg ALPINE_TAG=hello-world examples/Dockerfile.3 | jq .)" \
-		EXAMPLE_3B="$$(./$(APP) --jsonpath=$$..Image --jsonpath-raw examples/Dockerfile.3)" \
-		EXAMPLE_3A="$$(./$(APP) --jsonpath=$$..Image examples/Dockerfile.3 | jq .)" \
-		EXAMPLE_2="$$(./$(APP) --jsonpath=$$..As examples/Dockerfile.2 | jq .)" \
-		EXAMPLE_1="$$(./$(APP) examples/Dockerfile.1 | jq .)" \
-		VERSION="$(VERSION)" APP="$(APP)" USAGE="$$($(APP) -h 2>&1)" > README.md
 
 zip: release/$(APP)_$(VERSION)_osx_x86_64.tar.gz release/$(APP)_$(VERSION)_windows_x86_64.zip release/$(APP)_$(VERSION)_linux_x86_64.tar.gz release/$(APP)_$(VERSION)_windows_x86_32.zip release/$(APP)_$(VERSION)_linux_x86_32.tar.gz release/$(APP)_$(VERSION)_linux_arm64.tar.gz release/$(APP)_$(VERSION)_osx_arm64.tar.gz
 
