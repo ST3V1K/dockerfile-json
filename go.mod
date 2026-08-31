@@ -1,4 +1,4 @@
-module github.com/keilerkonzept/dockerfile-json
+module github.com/konflux-ci/dockerfile-json
 
 go 1.23
 

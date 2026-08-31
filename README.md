@@ -21,10 +21,10 @@ Prints Dockerfiles as JSON to stdout, optionally evaluates build args. Uses the 
 Using go get:
 
 ```bash
-go get -u github.com/keilerkonzept/dockerfile-json
+go get -u github.com/konflux-ci/dockerfile-json
 ```
 
-Or [download the binary for your platform](https://github.com/keilerkonzept/dockerfile-json/releases/latest) from the releases page.
+Or [download the binary for your platform](https://github.com/konflux-ci/dockerfile-json/releases/latest) from the releases page.
 
 ### Build tags
 
