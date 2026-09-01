@@ -1,0 +1,75 @@
+{
+  "MetaArgs": [
+    {
+      "Key": "SINGLE_QUOTED",
+      "DefaultValue": "'single quoted'",
+      "ProvidedValue": null,
+      "Value": "single quoted"
+    },
+    {
+      "Key": "DOUBLE_QUOTED",
+      "DefaultValue": "\"double quoted\"",
+      "ProvidedValue": null,
+      "Value": "double quoted"
+    },
+    {
+      "Key": "NESTED",
+      "DefaultValue": "\"${SINGLE_QUOTED} and ${DOUBLE_QUOTED}\"",
+      "ProvidedValue": null,
+      "Value": "single quoted and double quoted"
+    }
+  ],
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "scratch",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM scratch",
+      "Location": [
+        {
+          "Start": {
+            "Line": 5,
+            "Character": 0
+          },
+          "End": {
+            "Line": 5,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Scratch": true
+      },
+      "Commands": [
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "NESTED",
+              "Value": "single quoted and double quoted"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "nested",
+              "NoDelim": false,
+              "Value": "single quoted and double quoted"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        }
+      ]
+    }
+  ]
+}

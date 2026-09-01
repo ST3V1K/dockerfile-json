@@ -1,0 +1,2 @@
+--env
+ALPINE_TAG=10.10

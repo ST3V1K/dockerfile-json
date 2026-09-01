@@ -4,6 +4,7 @@ func (d *Dockerfile) analyzeStages() {
 	seenStageNames := make(map[string]int)
 	for i, stage := range d.Stages {
 		stageIndex, stageIndexOK := seenStageNames[stage.BaseName]
+		stage.From = From{}
 		switch {
 		case stageIndexOK:
 			stage.From.Stage = &FromStage{
@@ -12,7 +13,6 @@ func (d *Dockerfile) analyzeStages() {
 			}
 		case stage.BaseName == "scratch":
 			stage.From.Scratch = true
-			stage.From.Image = nil
 		default:
 			stage.From.Image = &stage.BaseName
 		}
@@ -21,7 +21,10 @@ func (d *Dockerfile) analyzeStages() {
 			seenStageNames[stage.Stage.Name] = i
 		}
 		for i, command := range stage.Commands {
-			stage.Commands[i].Name = command.Command.Name()
+			// Only set Name if it's not already set (e.g., by InjectEnv)
+			if stage.Commands[i].Name == "" {
+				stage.Commands[i].Name = command.Command.Name()
+			}
 		}
 	}
 	return

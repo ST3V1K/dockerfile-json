@@ -1,0 +1,10 @@
+FROM scratch
+
+# Should take the --env VERSION value passed from the CLI (or be empty if not set from the CLI)
+LABEL first-version=${VERSION}
+
+# Defined both in cli and in Dockerfile. Both should end up in the Dockerfile and in the resulting json
+ENV VERSION=1.0.0
+
+# Should take value from Dockerfile (or be empty when expand-vars is set to false)
+LABEL version=${VERSION}

@@ -1,0 +1,4 @@
+--build-arg-file
+testdata/basic-build-arg-file-expansion/expand-vars-set-to-false/argfile.conf
+
+--expand-build-args=false

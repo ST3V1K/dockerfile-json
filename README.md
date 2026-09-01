@@ -21,10 +21,33 @@ Prints Dockerfiles as JSON to stdout, optionally evaluates build args. Uses the 
 Using go get:
 
 ```bash
-go get -u github.com/keilerkonzept/dockerfile-json
+go get -u github.com/konflux-ci/dockerfile-json
 ```
 
-Or [download the binary for your platform](https://github.com/keilerkonzept/dockerfile-json/releases/latest) from the releases page.
+Or [download the binary for your platform](https://github.com/konflux-ci/dockerfile-json/releases/latest) from the releases page.
+
+### Build tags
+
+The `dfrunsecurity` build tag is optional but recommended when building from source.
+
+With the build tag:
+
+```bash
+go build -tags dfrunsecurity
+```
+
+- Supports parsing files with `RUN --security=insecure` and `RUN --security=sandbox` flags
+- The `Security` field in the JSON output will contain the parsed value (defaults to `sandbox`)
+
+Without the build tag:
+
+```bash
+go build
+```
+
+- Cannot parse files containing `RUN --security=*` flags (will return an error)
+- The `Security` field in JSON output will always be an empty string
+- Sufficient for use with e.g. Podman or Buildah, which do not support the `--security` flag
 
 ## Usage
 
@@ -36,8 +59,14 @@ dockerfile-json [PATHS...]
 Usage of dockerfile-json:
   -build-arg value
     	a key/value pair KEY[=VALUE]
+  -build-arg-file string
+    	path to a file with containing build-args in the form argument=value (blank lines and # comments are ignored)
+  -env value
+    	a key/value pair KEY[=VALUE]
   -expand-build-args
-    	expand build args (default true)
+    	DEPRECATED: use --expand-vars (expands ARG and ENV variables) (default true)
+  -expand-vars
+    	expand build ARGs and ENV variables (default true)
   -jsonpath string
     	select parts of the output using JSONPath (https://goessner.net/articles/JsonPath)
   -jsonpath-raw
@@ -345,4 +374,55 @@ $ dockerfile-json --expand-build-args=false --jsonpath=..BaseName Dockerfile
 "alpine:${ALPINE_TAG}"
 "build"
 "${APP_BASE}"
+```
+
+## Testing
+
+### Running tests
+
+```bash
+go test -v ./...
+```
+
+### Adding integration tests
+
+Each directory in `testdata/*` is the main directory of a test scenario.
+Each scenario can have sub-scenarios (subdirectories), but they all share one Containerfile.
+
+```text
+testdata/
+  my-scenario/
+    Containerfile          # required, shared by sub-scenarios
+    expected.json          # required but can be auto-generated
+    args.txt               # optional args for main scenario
+    sub-scenario-1/
+      expected.json
+      args.txt             # args for sub-scenario
+    sub-scenario-2/
+      expected.json
+      args.txt
+```
+
+Generate expected outputs:
+
+```bash
+# Generate for all test cases
+UPDATE_TESTDATA=1 go test
+
+# Or generate for specific test case
+UPDATE_TESTDATA=1 go test -run=TestIntegration/my-scenario/variant-1
+```
+
+In this mode (`UPDATE_TESTDATA=1`), tests overwrite the `expected.json` files instead
+of comparing them with the actual output. To compare against the existing data, run
+the tests without the `UPDATE_TESTDATA` variable.
+
+### Updating test expectations
+
+The update mode is also useful when making changes to existing behavior. Re-generate
+the output files and verify that your changes achieved what you intended:
+
+```bash
+UPDATE_TESTDATA=1 go test
+git diff testdata/  # Review changes
 ```

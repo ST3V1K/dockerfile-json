@@ -1,0 +1,56 @@
+{
+  "MetaArgs": null,
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "scratch",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM scratch",
+      "Location": [
+        {
+          "Start": {
+            "Line": 1,
+            "Character": 0
+          },
+          "End": {
+            "Line": 1,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Scratch": true
+      },
+      "Commands": [
+        {
+          "Env": [
+            {
+              "Key": "VERSION",
+              "NoDelim": false,
+              "Value": "2.0.0"
+            }
+          ],
+          "Mounts": null,
+          "Name": "ENV",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "version",
+              "NoDelim": false,
+              "Value": "${VERSION}"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        }
+      ]
+    }
+  ]
+}

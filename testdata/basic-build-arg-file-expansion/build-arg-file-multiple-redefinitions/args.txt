@@ -1,0 +1,2 @@
+--build-arg-file
+testdata/basic-build-arg-file-expansion/build-arg-file-multiple-redefinitions/argfile.conf

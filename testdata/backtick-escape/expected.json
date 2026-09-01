@@ -1,0 +1,69 @@
+{
+  "MetaArgs": null,
+  "Stages": [
+    {
+      "Name": "",
+      "OrigCmd": "FROM",
+      "BaseName": "scratch",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM scratch",
+      "Location": [
+        {
+          "Start": {
+            "Line": 2,
+            "Character": 0
+          },
+          "End": {
+            "Line": 2,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Scratch": true
+      },
+      "Commands": [
+        {
+          "Args": [
+            {
+              "Comment": "",
+              "Key": "ESCAPED_QUOTES",
+              "Value": "hello, \"world\""
+            }
+          ],
+          "Mounts": null,
+          "Name": "ARG",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "escaped-quotes",
+              "NoDelim": false,
+              "Value": "hello, \"world\""
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        },
+        {
+          "Labels": [
+            {
+              "Key": "path-with-space",
+              "NoDelim": false,
+              "Value": "C:\\Program Files\\app"
+            }
+          ],
+          "Mounts": null,
+          "Name": "LABEL",
+          "NetworkMode": "",
+          "Security": ""
+        }
+      ]
+    }
+  ]
+}
